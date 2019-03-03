@@ -1,3 +1,7 @@
+function playFor(aPerformance, plays) {
+  return plays[aPerformance.playID];
+}
+
 function amountFor(aPerformance, play) {
   let result = 0;
   switch(play.type) {
@@ -28,7 +32,7 @@ function statement (invoice, plays) {
                       { style: "currency", currency: "USD",
                         minimumFractionDigits: 2 }).format;
   for (let perf of invoice.performances) {
-    const play = plays[perf.playID];
+    const play = playFor(perf, plays);
     let thisAmount = amountFor(perf, play);
 
     // add volume credits
