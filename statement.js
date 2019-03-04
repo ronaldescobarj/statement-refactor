@@ -43,4 +43,4 @@ function usd(aNumber) {
     }).format(aNumber / 100);
 }
 
-export default statement;
+export { statement, htmlStatement };
