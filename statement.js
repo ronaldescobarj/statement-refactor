@@ -1,4 +1,7 @@
-function playFor(aPerformance, plays) {
+var fs = require('fs');
+var plays = JSON.parse(fs.readFileSync('./plays.json', 'utf8'));
+
+function playFor(aPerformance) {
   return plays[aPerformance.playID];
 }
 
@@ -10,9 +13,9 @@ function usd(aNumber) {
     }).format(aNumber/100);
 }
 
-function amountFor(aPerformance, plays) {
+function amountFor(aPerformance) {
   let result = 0;
-  switch (playFor(aPerformance, plays).type) {
+  switch (playFor(aPerformance).type) {
     case "tragedy":
       result = 40000;
       if (aPerformance.audience > 30) {
@@ -27,7 +30,7 @@ function amountFor(aPerformance, plays) {
       result += 300 * aPerformance.audience;
       break;
     default:
-      throw new Error(`unknown type: ${playFor(aPerformance, plays).type}`);
+      throw new Error(`unknown type: ${playFor(aPerformance).type}`);
   }
   return result;
 }
@@ -35,7 +38,7 @@ function amountFor(aPerformance, plays) {
 function volumeCreditsFor(aPerformance, plays) {
   let result = 0;
   result += Math.max(aPerformance.audience - 30, 0);
-  if ("comedy" === playFor(aPerformance, plays).type) result +=
+  if ("comedy" === playFor(aPerformance).type) result +=
     Math.floor(aPerformance.audience / 5);
   return result;
 }
@@ -47,8 +50,8 @@ function statement (invoice, plays) {
   for (let perf of invoice.performances) {
     volumeCredits += volumeCreditsFor(perf, plays);
     // print line for this order
-    result += ` ${playFor(perf, plays).name}: ${usd(amountFor(perf, plays))} (${perf.audience} seats)\n`;
-    totalAmount += amountFor(perf, plays);
+    result += ` ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`;
+    totalAmount += amountFor(perf);
   }
 
   result += `Amount owed is ${usd(totalAmount)}\n`;
