@@ -35,7 +35,7 @@ function amountFor(aPerformance) {
   return result;
 }
 
-function volumeCreditsFor(aPerformance, plays) {
+function volumeCreditsFor(aPerformance) {
   let result = 0;
   result += Math.max(aPerformance.audience - 30, 0);
   if ("comedy" === playFor(aPerformance).type) result +=
@@ -48,11 +48,13 @@ function statement (invoice, plays) {
   let volumeCredits = 0;
   let result = `Statement for ${invoice.customer}\n`;
   for (let perf of invoice.performances) {
-    volumeCredits += volumeCreditsFor(perf, plays);
     // print line for this order
     result += ` ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`;
     totalAmount += amountFor(perf);
   }
+  for (let perf of invoice.performances) {
+    volumeCredits += volumeCreditsFor(perf);
+  }  
 
   result += `Amount owed is ${usd(totalAmount)}\n`;
   result += `You earned ${volumeCredits} credits\n`;
