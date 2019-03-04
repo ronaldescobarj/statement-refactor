@@ -1,8 +1,18 @@
 var fs = require('fs');
 var plays = JSON.parse(fs.readFileSync('./plays.json', 'utf8'));
+var inv_json = JSON.parse(fs.readFileSync('./invoices.json', 'utf8'));
+var invoice = inv_json[0];
 
 function playFor(aPerformance) {
   return plays[aPerformance.playID];
+}
+
+function totalVolumeCredits() {
+  let volumeCredits = 0;
+  for (let perf of invoice.performances) {
+    volumeCredits += volumeCreditsFor(perf);
+  }
+  return volumeCredits;
 }
 
 function usd(aNumber) {
@@ -51,11 +61,7 @@ function statement (invoice, plays) {
     result += ` ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`;
     totalAmount += amountFor(perf);
   }
-  let volumeCredits = 0;
-  for (let perf of invoice.performances) {
-    volumeCredits += volumeCreditsFor(perf);
-  }  
-
+  let volumeCredits = totalVolumeCredits();
   result += `Amount owed is ${usd(totalAmount)}\n`;
   result += `You earned ${volumeCredits} credits\n`;
   return result;
